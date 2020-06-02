@@ -18,7 +18,17 @@
       background-color: white;
       color: black;
       border: 1px solid black;
-      transition: 200ms ease-in-out;
+      transition: 200ms ease-in all;
+    }
+
+    &.google-sign-in {
+      background-color: #4285f4;
+      color: white;
+
+      &:hover {
+        background-color: #357ae8;
+        border: none;
+      }
     }
   }
   
