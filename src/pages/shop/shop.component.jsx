@@ -1,37 +1,28 @@
 import React from 'react'
-import data from './shop.data'
-import CollectionPreview from '../../components/collection-preview/collection-preview.component'
 import { selectCartHidden } from '../../redux/cart/cart.selectors'
 import { connect } from 'react-redux'
 import { toggleCartHidden } from '../../redux/cart/cart.actions'
+import CollectionsOverview from '../../components/collections-overview/collections-overview.component'
 import { createStructuredSelector } from 'reselect'
+import { Route } from 'react-router-dom'
+import CollectionPage from '../collection/collection.component'
 
-class ShopPage extends React.Component {
-    constructor() {
-        super()
-        this.state = {collections: data}
+const ShopPage = ({ hidden, toggleCartHidden, match }) => {
+    console.log(match)
+    const handleClick = () => {
+        if(hidden===false) toggleCartHidden()
     }
 
-    handleClick = () => {
-        console.log(this.props.hidden)
-        if(this.props.hidden===false) this.props.toggleCartHidden()
-    }
-
-    render() {
-        const {collections} = this.state
-        return(
-            <div onClick={() => this.handleClick()}>
-                {
-                    collections.map(({id, ...otherCollectionProps}) => <CollectionPreview key={id} {...otherCollectionProps} />)
-                }
-            </div>
-        )
-    }
-
+    return(
+        <div className='shop-page' onClick={() => handleClick()}>
+            <Route exact path={`${match.path}`} component={CollectionsOverview} />
+            <Route path={`${match.path}/:collectionId`} component={CollectionPage} />
+        </div>
+    )
 }
 
 const mapStateToProps = createStructuredSelector({
-    hidden: selectCartHidden
+    hidden: selectCartHidden,
 })
 
 export default connect(mapStateToProps, {toggleCartHidden})(ShopPage)
