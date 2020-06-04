@@ -9,15 +9,16 @@ class SignIn extends React.Component {
 
     constructor() {
         super()
-        this.state = { email: '', password: '' }
+        this.state = { email: '', password: '', loader: false }
     }
 
     handleSubmit = async (e) => {
         e.preventDefault()
         const { email, password } = this.state
+        this.setState({loader: true})
         try {
             await auth.signInWithEmailAndPassword(email, password)
-            this.setState({ email: '', password:'' })
+            this.setState({ email: '', password:'', loader: false })
         } catch(error) {
             console.log(error)
         }
@@ -38,7 +39,14 @@ class SignIn extends React.Component {
                     <FormInput handleChange={this.handleChange} label='Email' type='email' name='email' value={this.state.email} required />
                     <FormInput handleChange={this.handleChange} label='Password' type='password' name='password' value={this.state.password} required />
                     <div className='buttons'>
-                        <CustomButton type='submit'>Submit Form</CustomButton>
+                        {
+                            this.state.loader ? (
+                                                    <div className="loader"></div>
+                                                )
+                                              : (
+                                                <CustomButton type='submit'>Submit Form</CustomButton>
+                                              )
+                        }
                         <CustomButton type='button' onClick={signInWithGoogle} isGoogleSignIn>Sign in with Google</CustomButton>
                     </div>
                 </form>
