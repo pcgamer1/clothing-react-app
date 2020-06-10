@@ -1,8 +1,11 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { createStructuredSelector } from 'reselect'
 
+import { selectIsUpLoading } from '../../redux/user/user.selector'
 import FormInput from '../form-input/form-input.component'
 import CustomButton from '../custom-button/custom-button.component'
-import { auth, createUserProfileDocument } from '../firebase/firebase.utils' 
+import { signUpStart } from '../../redux/user/user.actions'
 import './sign-up.styles.scss'
 
 class SignUp extends React.Component {
@@ -19,23 +22,17 @@ class SignUp extends React.Component {
     handleSubmit = async (e) => {
         e.preventDefault()
         const { displayName, email, password, confirmPassword } = this.state
+        const { signUpStart } = this.props
         if(password !== confirmPassword) {
             alert('Password do not match')
             return 
         }
-        try {
-            this.setState({ loader: true })
-            const { user } = await auth.createUserWithEmailAndPassword(email, password)
-            await createUserProfileDocument(user, {displayName})
-            this.setState({ displayName: '', email: '', password: '', confirmPassword: '', loader: false })
-        } catch(error) {
-            this.setState({ loader: false })
-            console.log('error: ', error)
-        }
+        signUpStart({email, password, displayName})
     }
 
     render() {
-        const { displayName, email, password, confirmPassword, loader } = this.state
+        const { displayName, email, password, confirmPassword } = this.state
+        const { isUpLoading } = this.props
         return (
             <div className='sign-up'>
                 <h2 className='title'>I do not have an account</h2>
@@ -47,7 +44,7 @@ class SignUp extends React.Component {
                     <FormInput type='password' name='confirmPassword' value={confirmPassword} onChange={this.handleChange} label='Confirm Password' required/>
                     <div className='buttons'>
                         {
-                            loader ? (
+                            isUpLoading ? (
                                 <div className="loader"></div>
                             ) : (
                                 <CustomButton type='submit'>SIGN UP</CustomButton>
@@ -60,4 +57,8 @@ class SignUp extends React.Component {
     }
 }
 
-export default SignUp
+const mapStateToProps = createStructuredSelector({
+    isUpLoading: selectIsUpLoading
+})
+
+export default connect(mapStateToProps, {signUpStart})(SignUp)
